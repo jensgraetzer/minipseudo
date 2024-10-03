@@ -1,12 +1,12 @@
 # minipseudo
 This is a very small pseudocode programming environment. It may be helpful for beginners who start learning their first programming language.
-It is a HTML file, so it can be executed on every operating system. Just open the file in a Webbrowser.
+It is a HTML file, so it runs on most devices, no matter what operating system. Just open the HTML file in a web browser.
 
-You can write program code and run it afterwards. Heare are some examples.
+You can write the program code, than run it. Here are a few examples:
 
 ## Example 1)
 
-    // Calculating the sum of all numbers in the array
+    // Calculating the sum of all numbers in an array
     var myArray = [1, 3, 2, 6] 
     print(myArray + "\n") 
     var sum = 0 
@@ -34,7 +34,7 @@ You can write program code and run it afterwards. Heare are some examples.
 
 ## Example 3) 
 
-    // Two for-Loops
+    // Two for loops
     for(var i = 0; i < 10; i++) {
         for(var j = 0; j < 10; j++) {
             print(10 * j + i + "   ")  
