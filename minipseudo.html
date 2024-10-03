@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=768, user-scalable=no" />
+<title>Minipseudo Programmierer</title>
+
+<script type="text/javascript">
+//<![CDATA[
+/* J. Grätzer, Leipzig, 2017-2024 */
+
+// Stand: 2024-10-02
+
+// Man kann Programmbeispiele ausführen. Die Programiersprache ist JavaScript.
+
+// --- Mehrere Strings, die Programmbeispiele enthalten ---
+// Mehrzeiliger String mit dem JS-Quelltext, der zu Beginn und nach "Reset" im Editor-Fenster stehen soll:
+// Beachte: Die sog. Template String (in Backticks; darin Backslashes wie in "\n" verdoppeln) für mehrzeiligen
+//  Code unterstützt der IE11 nicht, erst Edge. Aus Kompatibiltätsgründen die Codezeilen evtl. zusammensetzen!
+
+var soureCode1 =
+`// Input und Sofort-Output
+
+var a = input("Gib eine Zahl ein!")
+a = number(a)
+a = a * 1000 + 1
+output(a)
+`;
+
+var soureCode2 = 
+`// Array mit Zahlen,
+// Sammel-Ausgabe am Programmende - mit print()
+
+var meinArray = [3, 5, 2, 7];
+meinArray[2] = 8;
+var n = length(meinArray)
+for(var i = 0; i < n; i++) {
+    print(meinArray[i] + "   ")
+}
+`;
+
+var soureCode3 = 
+`// Zufallszahl erzeugen
+
+var z = random(5)  // Zufällige ganze Zahl von 0 bis 4
+var wert = 2
+if(z > wert) {
+    output(z + " ist größer als " + wert)
+} else if( z == wert) {
+    output(z + " ist gleich " + wert)
+}else {
+    output(z + " ist kleiner als " + wert)
+}
+`;
+
+var soureCode4 =
+`// Zwei for-Schleifen
+
+for(var i = 0; i < 10; i++) {
+    for(var j = 0; j < 10; j++) {
+        print(10 * j + i + "   ")  
+    }
+    print("\\n") 
+}
+`;
+
+var soureCode5 =
+`// ASCII-Code
+
+var asciicode = ord("A")
+output("Der ASCII-Code ist " + asciicode)
+
+asciicode = asciicode + 1
+var zeichen = chr(asciicode)
+output("Das folgende Zeichen ist " + zeichen)
+`;
+
+var soureCode6 =
+`// Eine Funktion selbst programmieren
+
+var a = input("Gib die erste Zahl ein!")
+var b = input("Gib die zweite Zahl ein!")
+a = number(a)
+b = number(b)
+var c = addiere(a, b)
+print(c)
+
+function addiere(zahl1, zahl2)
+{
+    var ergebnis = zahl1 + zahl2
+    return ergebnis
+}`;
+
+// --- Beginn des Programmes ---
+
+//var elemPrintArea;		// diese "globale Deklaration" ist unnötig
+//var elemCodeArea;
+
+// Globale Variablen:
+myStorageKey = 'sandbox_08158873';   // Schlüssel für Speichern des Code-Arbeitsstandes im Web Storage des Browsers (hier unbenutzt)
+
+printOutputString = "";   // Globale Variable, die String-Text "sammelt", der mit verschiedenen Print() ausgegeben wird
+
+
+function myInitWidget()
+{
+       //alert("LOG - myInitWidget() #00");
+       
+	// Objekte für die anzusprechenden UI-Elemente herstellen
+	elemCodeArea = document.getElementById('codeEditorArea');
+	//elemButtonReset1 = document.getElementById('buttonReset');
+	elemButtonRun = document.getElementById('buttonRun');
+	elemDivLabelSourceCode = document.getElementById('labelSource');	
+	elemDivLabelPrintOutput = document.getElementById('labelOutput');	
+
+	// Erscheinung der Ergebnisausgabe initialisieren:
+	//elemPrintArea.style.backgroundColor = "#c0d0c0";
+	//elemPrintArea.style.width = "90%";    // Nur Zahlen-Strings mit Einheit erlaubt, wie "120px" oder "90%"
+
+	// TODO: Den Exit-Button ausblenden, wenn er keine Back-Historie enthält!
+
+	//alert("LOG - myInitWidget() #01");
+
+	//alert("LOG - myInitWidget() #02");
+
+	// Reset des Inhalts der Testbox auf Ausgangeswerte des HTML-Quelltextes
+	var actualCode = sessionStorage.getItem(myStorageKey);    // Der aktuelle Code-Stand wurde im Webstorage gespeichert vor dem Refresh der aktuellen Seite
+	//alert("LOG - myInitWidget() #02 ... actualCode:\n" + actualCode); 
+	if(actualCode == null)
+		elemCodeArea.value = soureCode1;	// Voreingestelltes Codebeispiel eintragen, wenn es zu Beginn noch keinen aktuellen Code gibt
+	else if(actualCode.trim() == '')
+		elemCodeArea.value = "//your code:\n";
+	else
+		elemCodeArea.value = actualCode;	 // gespeicherten aktuellen Code in das Editor-Fenster eintragen
+
+	//alert("LOG - myInitWidget() #03");
+	
+	//// Achtung: Im IE11 darf man den ursprünglichen Inhalt nicht wie hier gezeigt aus innerHTML lesen, 
+	////    denn innerHTML enthält im IE11 den neuen (geänderten) HTML-Text! Das hier geht daher überall ausser im IE11:
+	//document.getElementById('codeEditorArea').value = document.getElementById('codeEditorArea').innerHTML;
+}
+
+function myRunSorcecode()
+{
+	printOutputString = "";  // Lösche alten Inhalt aus dem Ausgabestring
+	//var str = document.getElementById('codeEditorArea').value;
+	var str = elemCodeArea.value;  // .value verwenden, nicht .innerHTML!
+	//alert("In der Textarea steht:\n\n" + str);		// Für einfaches Script-Debugging: Alerts anstelle von Breakpoints
+	//str = "var a = 5; var b = 10; var c = a + b; document.getElementById('demo').innerHTML = c;"  // Simples Testbeispiel
+	
+	// Das RunArea-Objekt herstellen, in dem der Code ausgefürht wird
+	var myRunAreaObject = new RunArea(str);
+	
+	//alert("LOG - myRunAreaObject() #10");
+}
+
+// Klasse, in deren Objekt der Code ausgeführt (mit eval(str)) wird
+class RunArea {
+	constructor(codeStr) {
+		// Die Programmausführung passiert im Construktor, d.h. unmittelbar bei Herstellung des Objektes.
+		
+		// LEIDER: Hier im Sourcecode ist "var" vor Variablen zwingend (zur Deklaration)
+		//	var a = 3333
+		//	alert(a)     // Geht nur, wenn "var" vor a steht!
+		// ... ERKENNTNIS: In der Klasse müssen variablen IMMER mit "var" oder "let" deklariert werden!!!
+	
+		//alert("LOG - myRunAreaObject() #01");
+		try {
+			//alert("LOG - myRunAreaObject() #02");
+		
+			// Variable, die den String-Text "sammelt", welcher mit verschiedenen Print() ausgegeben wird
+			printOutputString = "";
+			
+			// eval() läuft im "Raum" dieses Objektes, kann Variablen und Methoden des Objektes nutzen.
+			var rtrn = eval(codeStr);    
+			//alert("Return von EVAL=" + rtrn);   // Test, welche Rückgabe eval() liefert
+			
+			// Ausgabe der Print-Ausgabe im alert-Fenster (anstelle der früheren Ausgabe im grünen Print-Feld)
+			if(printOutputString != "") {
+				alert(printOutputString)
+			}
+		} catch(err) {
+			alert("SYNTAX FEHLER\n" + err.message);		// Wenn Fehler mit alert()-Fenstern gemeldet werden sollen ... 
+			//print("SYNTAX ERROR: " + err.message + "\n");		// Wenn Fehler im Ausgabe-Fenster geschrieben werden sollen		
+		}
+		
+		// Eigene Methoden, die im Sourcecode-Text für eval() vorkommen können
+		function print(printText)
+		{
+			// Eine globale String-Variable, deren Inhalt zum Schluss mit alert() angezeigt wird.
+			printOutputString = printOutputString + printText;
+		}
+
+		function input(titleText)
+		{
+			//Aufforderung zur Eingabe in Prompt-Box, 2 Varianten: input(), input(titleText)
+			// (BTW: Javascript kennt keine Überladung)
+			if(titleText == undefined)
+				titleText = "Deine Eingabe:"
+			var str = prompt(titleText, "");
+			return str;
+		}
+
+		function output(text)
+		{
+			//Aufforderung zur Eingabe in Prompt-Box, 2 Varianten: input(), input(titleText)
+			// (BTW: Javascript kennt keine Überladung)
+			alert(text)
+		}
+
+		function random(n)
+		{
+			// random(n) generiert ganze Zufallszahl von 0 bis n-1
+			return Math.floor(Math.random() * Math.floor(n));
+		}
+
+		function ord(someCharString)
+		{
+			// ASCII-Code des ersten Zeichens des Strings zurückgeben
+			// "ABC".charCodeAt(0)   // returns 65   // BTW: Beachte Zugriff auf Zeichen im String!!
+			return someCharString.charCodeAt(0)
+		}
+
+		function chr(nr)
+		{
+			// Zeichen zu gegebenen Code-Numern zurückgeben
+			// String.fromCharCode(65,66,67); // returns 'ABC'
+			return String.fromCharCode(nr)
+		}
+
+		function number(n)
+		{
+			// Konvertierung in eine Zahl: Funktionsname beginnt in JavaScript leider mit Großbuchstaben
+			return Number(n)
+		}
+		
+		function length(a)
+		{
+			// Länge eines Arrays oder Strings ermitteln
+			return a.length
+		}
+	}
+}
+
+//]]>
+</script>
+<body onload="myInitWidget()">
+
+<h1>Minipseudo Programmierer</h1>
+<!--
+<p>
+This playground is based on JavaScript.
+</p>
+-->
+
+<div id="btnRun" ><button type="button" id="buttonRun" onclick="myRunSorcecode()">
+Start
+</button>&nbsp;<mark>Das Programm ausführen</mark></div>
+
+<p><div id="labelSource">Programmiere hier:</div>
+
+<p><textarea cols="70" rows="14" name="myTextArea"  id="codeEditorArea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" >
+</textarea></p>
+
+<p><div id="labelSource">Lade ein Programmbeispiel in den Editor:</div>
+
+<button type="button" id="buttonReset1" onclick="elemCodeArea.value = soureCode1">
+1) input() / output()
+</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button type="button" id="buttonReset2" onclick="elemCodeArea.value = soureCode2">
+2) print()
+</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button type="button" id="buttonReset3" onclick="elemCodeArea.value = soureCode3">
+3) random()
+</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button type="button" id="buttonReset4" onclick="elemCodeArea.value = soureCode4">
+4) for ... for ...
+</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button type="button" id="buttonReset5" onclick="elemCodeArea.value = soureCode5">
+5) ASCII-Code
+</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button type="button" id="buttonReset6" onclick="elemCodeArea.value = soureCode6">
+6) Custom Function
+</button>
+
+<p><small><small><i>(Jens Grätzer, Leipzig, Germany)</i></small></small></p>
+
+</body>
+</html>
