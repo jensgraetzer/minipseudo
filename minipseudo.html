@@ -8,7 +8,7 @@
 //<![CDATA[
 /* J. Grätzer, Leipzig, 2017-2024 */
 
-// Stand: 2024-10-02
+// Stand: 2024-10-20
 
 // Man kann Programmbeispiele ausführen. Die Programiersprache ist JavaScript.
 
@@ -161,7 +161,7 @@ class RunArea {
 		// LEIDER: Hier im Sourcecode ist "var" vor Variablen zwingend (zur Deklaration)
 		//	var a = 3333
 		//	alert(a)     // Geht nur, wenn "var" vor a steht!
-		// ... ERKENNTNIS: In der Klasse müssen variablen IMMER mit "var" oder "let" deklariert werden!!!
+		// ... ERKENNTNIS: In der Klasse müssen Variablen IMMER mit "var" oder "let" deklariert werden!!!
 	
 		//alert("LOG - myRunAreaObject() #01");
 		try {
@@ -222,15 +222,40 @@ class RunArea {
 
 		function chr(nr)
 		{
-			// Zeichen zu gegebenen Code-Numern zurückgeben
-			// String.fromCharCode(65,66,67); // returns 'ABC'
+			// Ein (oder mehrere) Zeihen zu gegebenen Code-Nummern zurückgeben.
+			// Normalerweise wird man nur ein Zeichen benötigen: chr(65) liefert "A"
+			// (Mehrere Zeichen möglich String.fromCharCode(65,66,67);  // returns 'ABC')
 			return String.fromCharCode(nr)
+		}
+		
+		function int(n)
+		{
+			// Zahl auf den nächsten Integerwert abrunden
+			return Math.floor(Number(n))
+		}
+		
+		function ceil(n)
+		{
+			// Zahl auf den nächsten Integerwert aufrunden
+			return Math.ceil(Number(n))
+		}
+		
+		function abs(n)
+		{
+			// Den absoluten Betrag der Zahl zurückgeben
+			return Math.abs(Number(n))
 		}
 
 		function number(n)
 		{
 			// Konvertierung in eine Zahl: Funktionsname beginnt in JavaScript leider mit Großbuchstaben
 			return Number(n)
+		}
+		
+		function string(a)
+		{
+			// Datentyp zu "string" wandeln: Funktionsname beginnt in JavaScript leider mit Großbuchstaben
+			return String(a)
 		}
 		
 		function length(a)
