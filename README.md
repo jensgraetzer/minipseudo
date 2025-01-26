@@ -1,4 +1,5 @@
 # minipseudo
+
 This is a very small pseudocode programming environment. It may be helpful for beginners who start learning their first programming language.
 It is a HTML file, so it runs on most devices, no matter what operating system. Just open the HTML file in a web browser.
 
@@ -16,7 +17,7 @@ You can write the program code, than run it. Here are a few examples:
     }  
     print("The sum all numbers is " + sum  + ".\n") 
 
-## Example 2) 
+## Example 2)
 
     // Programming an own function
     var a = input("Enter the first number!")
@@ -32,7 +33,7 @@ You can write the program code, than run it. Here are a few examples:
         return result
     }
 
-## Example 3) 
+## Example 3)
 
     // Two for loops
     for(var i = 0; i < 10; i++) {
@@ -41,3 +42,23 @@ You can write the program code, than run it. Here are a few examples:
         }
         print("\n") 
     }
+
+## minipseudo playgrounds
+
+This is a version of the minipseudo programming environment. It contains a playground with 4 by 4 fields.
+
+Use this functions to move a game figure across the field:
+
+* moveForward()
+* turnRight()
+
+There are two other functions:
+
+* showGround()
+* writeLine()
+
+At the beginning the game figure stands at position [0,0] and looks to the right side.
+
+Use the buttons to see some example code. Run the code to see, what the functions do.
+
+This application is inspired by Swift Playgrounds from Apple.
